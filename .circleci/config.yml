@@ -1,18 +1,32 @@
 version: 2.1
 
 jobs:
-  build-test-backend:
+  build-backend:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
-          name: "Install backend"
+          name: "Build backend"
           command: |
             cd backend
             npm install
+            npm run build
+
+  build-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: "Build frontend"
+          command: |
+            cd frontend
+            npm install
+            npm run build
 
 workflows:
   default:
     jobs:
-      - build-test-backend
+      - build-backend
+      - build-frontend
