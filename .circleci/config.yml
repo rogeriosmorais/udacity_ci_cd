@@ -9,9 +9,23 @@ jobs:
         - run:
             name: Ensure backend infrastructure exist
             command: |
-              aws cloudformation deploy \
+              aws cloudformation create-stack \
                 --template-file ./.circleci/files/backend.yml \
                 --stack-name udacitycicdstack
+
+  create_frontend_infrastructure:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run:
+            name: Ensure frontend infrastructure exist
+            command: |
+              aws cloudformation create-stack \
+                --template-file ./.circleci/files/frontend.yml \
+                --stack-name udacitycicdstack
+                --parameters ParameterKey=ID,ParameterValue=udacityfront
+
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -86,6 +100,7 @@ workflows:
   default:
     jobs:
       - create_backend_infrastructure
+      - create_frontend_infrastructure
 #      - build-backend
 #      - build-frontend:
 #          requires: 
