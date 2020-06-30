@@ -23,8 +23,7 @@ jobs:
             command: |
               aws cloudformation deploy \
                 --template-file ./.circleci/files/frontend.yml \
-                --stack-name udacitycicdfrontstack
-                --parameters ParameterKey=ID,ParameterValue=udacityfront
+                --stack-name udacitycicdfrontstack                
 
   build-backend:
     docker:
