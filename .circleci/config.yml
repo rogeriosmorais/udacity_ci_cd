@@ -10,7 +10,7 @@ jobs:
             name: Ensure backend infrastructure exist
             command: |
               aws cloudformation deploy \
-                --template-file /files/backend.yml \
+                --template-file ./files/backend.yml \
                 --stack-name my-stack
   build-backend:
     docker:
