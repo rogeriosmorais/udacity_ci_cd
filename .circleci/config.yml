@@ -95,11 +95,29 @@ jobs:
             cd frontend
             npm audit --audit-level=critical
 
+  configure_infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["2b:ae:fa:9e:27:5b:f2:60:50:fa:b6:b3:02:ce:d0:eb"]
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible # install the dependencies needed for your playbook
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible/
+            ansible-playbook -i inventory.txt playbook.yml
+
 workflows:
   default:
     jobs:
-      - create_backend_infrastructure
-      - create_frontend_infrastructure
+#      - create_backend_infrastructure
+#      - create_frontend_infrastructure
+      - configure_infrastructure
 #      - build-backend
 #      - build-frontend:
 #          requires: 
