@@ -1,7 +1,8 @@
 
 - name: "Configure and Deploy Infrastructure"
   hosts: all
-
+    
+  gather_facts: False
   roles:
    - configure-server
    - deploy
