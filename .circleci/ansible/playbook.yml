@@ -1,0 +1,7 @@
+
+- name: "Configure and Deploy Infrastructure"
+  hosts: all
+
+  roles:
+   - configure-server
+   - deploy
