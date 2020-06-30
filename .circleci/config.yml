@@ -11,7 +11,7 @@ jobs:
             command: |
               aws cloudformation deploy \
                 --template-file ./.circleci/files/backend.yml \
-                --stack-name aws-deepracer-resources-180f561e-3dde-4b2b-af85-2225bff39079
+                --stack-name udacitycicdstack
   build-backend:
     docker:
       - image: circleci/node:13.8.0
