@@ -1,17 +1,18 @@
 version: 2.1
 
 jobs:
-  hello-world:
+  build-test-backend:
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
       - run:
-          name: Say Hello
+          name: "Install backend"
           command: |
-            echo "Hello World"
+            cd backend
+            npm install
 
 workflows:
   default:
     jobs:
-      - hello-world
+      - build-test-backend
