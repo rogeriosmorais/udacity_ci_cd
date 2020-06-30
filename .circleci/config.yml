@@ -49,7 +49,7 @@ jobs:
             npm install
             npm run test
             
-   audit-backend:
+  audit-backend:
     docker:
       - image: circleci/node:13.8.0
     steps:
@@ -60,7 +60,7 @@ jobs:
             cd backend
             npm audit --audit-level=critical
 
-   audit-frontend:
+  audit-frontend:
     docker:
       - image: circleci/node:13.8.0
     steps:
