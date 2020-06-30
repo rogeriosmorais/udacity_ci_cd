@@ -1,6 +1,17 @@
 version: 2.1
 
 jobs:
+  create_backend_infrastructure:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run:
+            name: Ensure backend infrastructure exist
+            command: |
+              aws cloudformation deploy \
+                --template-file /files/backend.yml \
+                --stack-name my-stack
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -74,22 +85,23 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-backend
-      - build-frontend:
-          requires: 
-            - build-backend
-      - test-backend:
-          requires: 
-            - build-backend
-      - test-frontend:
-          requires:
-            - test-backend
-            - build-frontend
-      - audit-backend:
-          requires:
-            - test-backend
-            - test-frontend
-      - audit-frontend:
-          requires:
-            - test-backend
-            - test-frontend
+     -create_backend_infrastructure
+#      - build-backend
+#      - build-frontend:
+#          requires: 
+#            - build-backend
+#      - test-backend:
+#          requires: 
+#            - build-backend
+#      - test-frontend:
+#          requires:
+#            - test-backend
+#            - build-frontend
+#      - audit-backend:
+#          requires:
+#            - test-backend
+#            - test-frontend
+#      - audit-frontend:
+#          requires:
+#            - test-backend
+#            - test-frontend
