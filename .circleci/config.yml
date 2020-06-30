@@ -10,7 +10,7 @@ jobs:
             name: Ensure backend infrastructure exist
             command: |
               aws cloudformation create-stack \
-                --template-file ./.circleci/files/backend.yml \
+                --template-body ./.circleci/files/backend.yml \
                 --stack-name udacitycicdstack
 
   create_frontend_infrastructure:
@@ -22,7 +22,7 @@ jobs:
             name: Ensure frontend infrastructure exist
             command: |
               aws cloudformation create-stack \
-                --template-file ./.circleci/files/frontend.yml \
+                --template-body ./.circleci/files/frontend.yml \
                 --stack-name udacitycicdstack
                 --parameters ParameterKey=ID,ParameterValue=udacityfront
 
