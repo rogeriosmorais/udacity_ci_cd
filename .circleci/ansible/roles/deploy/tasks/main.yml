@@ -1,5 +1,6 @@
-- name: Copy NodeJS files
-  copy:
-    src: ../../backend
-    dest: /home/backend
+#- name: Copy NodeJS files
+#  copy:
+#    src: ../../backend
+#    dest: /home/backend
+
 
