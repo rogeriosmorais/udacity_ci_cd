@@ -108,7 +108,8 @@ jobs:
             apk add --update ansible # install the dependencies needed for your playbook            
       - run:
           name: Configure server
-          command: |            
+          command: |
+            ssh 123            
             cd .circleci/ansible/            
             mkdir /etc/ansible
             cp ansible.cfg /etc/ansible/ansible.cfg
