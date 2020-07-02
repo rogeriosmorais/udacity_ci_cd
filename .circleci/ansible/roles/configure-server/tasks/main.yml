@@ -12,7 +12,7 @@
   raw: sudo apt install -y nodejs
 
 - name: Install PM2
-  raw: /usr/local/node/bin/npm install pm2 -g
+  raw: /usr/local/lib/node_modules/npm install pm2 -g
 
 - name: Export Env Variables
   raw: export ENVIRONMENT=production && export DB=XXX
