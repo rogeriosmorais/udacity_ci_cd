@@ -3,3 +3,8 @@
     src: /root/project/backend
     dest: /home/ubuntu/backend
 
+- name: Install NodeJS app
+  raw: cd /home/ubuntu/backend && npm install
+
+- name: Build NodeJS app
+  raw: cd /home/ubuntu/backend && npm run build
