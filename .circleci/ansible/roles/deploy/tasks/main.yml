@@ -10,14 +10,14 @@
 #  raw: cd /home/ubuntu/backend && npm run build
 
 - name: Stop APP
-  become: true
+  become: yes
   become_method: sudo
   become_user: root
   command: pm2 stop app chdir=/home/ubuntu/backend
   ignore_errors: yes
 
 - name: Start APP
-  become: true
+  become: yes
   become_method: sudo
   become_user: root
   command: pm2 start index.js --name app chdir=/home/ubuntu/backend  
