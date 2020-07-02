@@ -10,10 +10,10 @@
   raw: cd /home/ubuntu/backend && npm run build
 
 - name: Stop APP
-#  sudo_user: ubuntu
+  sudo_user: ubuntu
   command: pm2 stop app chdir=/home/ubuntu/backend
   ignore_errors: yes
 
 - name: Start APP
-#  sudo_user: ubuntu
+  sudo_user: ubuntu
   command: pm2 start index.js --name app chdir=/home/ubuntu/backend  
