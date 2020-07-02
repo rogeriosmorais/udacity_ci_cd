@@ -9,11 +9,14 @@
   when: check_python.rc != 0
 
 - name: Install NodeJS
-  raw: apt install -y nodejs
+  become: true
+  become_method: sudo
+  become_user: ubuntu
+  command: apt install -y nodejs
 
-- name: Install PM2
-  raw: npm install pm2 -g
+#- name: Install PM2
+#  raw: npm install pm2 -g
 
-- name: Export Env Variables
-  raw: export ENVIRONMENT=production && export DB=XXX
+#- name: Export Env Variables
+#  raw: export ENVIRONMENT=production && export DB=XXX
 
