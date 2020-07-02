@@ -111,7 +111,7 @@ jobs:
           name: Configure and deploy server
           command: |            
             cd .circleci/ansible/
-            ansible-playbook -vvv -i inventory.txt playbook.yml
+            ansible-playbook -i inventory.txt playbook.yml
 
 workflows:
   default:
