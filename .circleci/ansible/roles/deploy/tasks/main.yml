@@ -1,7 +1,7 @@
-#- name: Copy NodeJS files
-#  copy:
-#    src: /root/project/backend
-#    dest: /home/ubuntu/backend
+- name: Copy NodeJS files
+  copy:
+    src: /root/project/backend
+    dest: /home/ubuntu/backend
 
 #- name: Install NodeJS app
 #  raw: cd /home/ubuntu/backend && npm install
@@ -9,12 +9,12 @@
 #- name: Build NodeJS app
 #  raw: cd /home/ubuntu/backend && npm run build
 
-- name: Executing node
+- name: Executing NodeJS
   shell: |
+    cd /home/ubuntu/backend
     npm install
     npm run build
-    pm2 start index.js chdir=/home/ubuntu/backend
-
+    pm2 npm run start:prod
 #- name: Stop APP
 #  become: yes
 #  become_method: sudo
