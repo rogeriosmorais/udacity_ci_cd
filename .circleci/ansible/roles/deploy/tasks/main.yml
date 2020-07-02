@@ -1,5 +1,5 @@
 - name: Copy NodeJS files
   copy:
-    src: ../../backend
+    src: /root/project/backend
     dest: /home/backend
 
