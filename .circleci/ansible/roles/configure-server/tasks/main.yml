@@ -17,5 +17,3 @@
 - name: Export Env Variables
   raw: export ENVIRONMENT=production && export DB=XXX
 
-- name: Verify cfg
-  raw: cat /etc/ansible/ansible.cfg
