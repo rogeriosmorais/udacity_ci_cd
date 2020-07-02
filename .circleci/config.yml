@@ -105,15 +105,15 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible # install the dependencies needed for your playbook            
+            apk add --update ansible # install the dependencies needed for your playbook
+            apt install openssh-client            
       - run:
           name: Configure server
-          command: |
-            ssh 123            
+          command: |            
             cd .circleci/ansible/            
             mkdir /etc/ansible
             cp ansible.cfg /etc/ansible/ansible.cfg
-            ansible-playbook -i inventory.txt playbook.yml
+            ansible-playbook -vvv -i inventory.txt playbook.yml
 
 workflows:
   default:
