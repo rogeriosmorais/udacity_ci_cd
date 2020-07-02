@@ -1,2 +1,2 @@
 [all]
-3.85.141.125 ansible_user=ubuntu
+3.85.141.125 ansible_user=root
