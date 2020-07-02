@@ -12,7 +12,7 @@
   become: true
   become_method: sudo
   become_user: ubuntu
-  command: apt install -y nodejs
+  command: sudo apt install -y nodejs
 
 #- name: Install PM2
 #  raw: npm install pm2 -g
