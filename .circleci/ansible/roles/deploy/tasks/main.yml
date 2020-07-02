@@ -14,7 +14,7 @@
     cd /home/ubuntu/backend
     npm install
     npm run build
-    pm2 npm run start:prod
+    pm2 start npm run start:prod
 #- name: Stop APP
 #  become: yes
 #  become_method: sudo
