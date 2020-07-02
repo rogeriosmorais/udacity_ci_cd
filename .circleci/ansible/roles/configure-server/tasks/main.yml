@@ -11,6 +11,9 @@
 - name: Install NodeJS
   raw: sudo apt install -y nodejs
 
+- name: Find NPM
+  raw: which npm
+
 - name: Install PM2
   raw: /usr/bin/npm install pm2 -g
 
