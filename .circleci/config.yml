@@ -95,7 +95,7 @@ jobs:
             cd frontend
             npm audit --audit-level=critical
 
-  configure_infrastructure:
+  configure_and_deploy:
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -108,7 +108,7 @@ jobs:
             apk add --update ansible # install the dependencies needed for your playbook
             apk add openssh-client            
       - run:
-          name: Configure server
+          name: Configure and deploy server
           command: |            
             cd .circleci/ansible/
             ansible-playbook -vvv -i inventory.txt playbook.yml
@@ -118,7 +118,7 @@ workflows:
     jobs:
 #      - create_backend_infrastructure
 #      - create_frontend_infrastructure
-      - configure_infrastructure
+      - configure_and_deploy
 #      - build-backend
 #      - build-frontend:
 #          requires: 
