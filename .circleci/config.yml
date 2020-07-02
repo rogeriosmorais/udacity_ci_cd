@@ -110,9 +110,7 @@ jobs:
       - run:
           name: Configure server
           command: |            
-            cd .circleci/ansible/            
-#            mkdir /etc/ansible
-#            cp ansible.cfg /etc/ansible/ansible.cfg
+            cd .circleci/ansible/
             ansible-playbook -vvv -i inventory.txt playbook.yml
 
 workflows:
