@@ -4,15 +4,30 @@
   failed_when: false
   register: check_python
 
-- name: Install Python
-  raw: apt -y update && apt install -y python-minimal
-  when: check_python.rc != 0
+#- name: Install Python
+#  raw: apt -y update && apt install -y python-minimal
+#  when: check_python.rc != 0
 
-- name: Install NodeJS
+#- name: Install NodeJS
+#  become: yes
+#  become_method: sudo
+#  become_user: root
+#  command: apt install -y nodejs
+
+- name: "install dependencies."
   become: true
-  become_method: sudo
-  become_user: ubuntu
-  command: sudo apt install -y nodejs
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
 
 #- name: Install PM2
 #  raw: npm install pm2 -g
