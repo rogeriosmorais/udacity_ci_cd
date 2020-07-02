@@ -111,7 +111,7 @@ jobs:
           name: Configure server
           command: |            
             cd .circleci/ansible/
-            sudo ansible-playbook -vvv -i inventory.txt playbook.yml
+            ansible-playbook -vvv -i inventory.txt playbook.yml
 
 workflows:
   default:
