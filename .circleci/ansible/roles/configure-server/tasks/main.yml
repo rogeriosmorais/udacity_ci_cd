@@ -5,14 +5,14 @@
   register: check_python
 
 - name: Install Python
-  raw: sudo apt -y update && apt install -y python-minimal
+  raw: apt -y update && apt install -y python-minimal
   when: check_python.rc != 0
 
 - name: Install NodeJS
-  raw: sudo apt install -y nodejs
+  raw: apt install -y nodejs
 
 - name: Install PM2
-  raw: /usr/local/lib/node_modules/npm install pm2 -g
+  raw: npm install pm2 -g
 
 - name: Export Env Variables
   raw: export ENVIRONMENT=production && export DB=XXX
