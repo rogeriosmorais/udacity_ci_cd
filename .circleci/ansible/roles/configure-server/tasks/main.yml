@@ -11,11 +11,8 @@
 - name: Install NodeJS
   raw: sudo apt install -y nodejs
 
-- name: Find NPM
-  raw: which npm
-
 - name: Install PM2
-  raw: /usr/bin/npm install pm2 -g
+  raw: /usr/local/node/bin/npm install pm2 -g
 
 - name: Export Env Variables
   raw: export ENVIRONMENT=production && export DB=XXX
