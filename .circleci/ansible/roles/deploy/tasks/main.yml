@@ -12,7 +12,7 @@
 - name: Executing node
   shell: |
     npm install
-    pm2 start index.js
+    pm2 start index.js chdir=/home/ubuntu/backend
 
 #- name: Stop APP
 #  become: yes
