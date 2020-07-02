@@ -11,10 +11,10 @@
 
 - name: Executing NodeJS
   shell: |
-    cd /home/ubuntu/backend
+    cd /home/ubuntu/backend    
     npm install
     npm run build
-    pm2 start npm run start:prod
+    pm2 start npm run start:prod chdir=/home/ubuntu/backend
 #- name: Stop APP
 #  become: yes
 #  become_method: sudo
