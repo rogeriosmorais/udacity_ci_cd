@@ -1,7 +1,7 @@
-- name: Copy NodeJS files
-  copy:
-    src: /root/project/backend
-    dest: /home/ubuntu/backend
+#- name: Copy NodeJS files
+#  copy:
+#    src: /root/project/backend
+#    dest: /home/ubuntu/backend
 
 - name: Install NodeJS app
   raw: cd /home/ubuntu/backend && npm install
