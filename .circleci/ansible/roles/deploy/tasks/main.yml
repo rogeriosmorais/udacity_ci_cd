@@ -11,7 +11,7 @@
 - name: Building backend service
   shell: |
     export TYPEORM_CONNECTION=postgres
-    export TYPEORM_HOST=udacitycicd.cvpi0ipgh545.us-east-1.rds.amazonaws.com
+    export TYPEORM_HOST=udacity2.cvpi0ipgh545.us-east-1.rds.amazonaws.com
     export TYPEORM_PORT=5432
     export TYPEORM_USERNAME=postgres
     export TYPEORM_PASSWORD=rogerneo
@@ -38,7 +38,7 @@
   shell: |
     cd /home/ubuntu/backend
     export TYPEORM_CONNECTION=postgres
-    export TYPEORM_HOST=udacitycicd.cvpi0ipgh545.us-east-1.rds.amazonaws.com
+    export TYPEORM_HOST=udacity2.cvpi0ipgh545.us-east-1.rds.amazonaws.com
     export TYPEORM_PORT=5432
     export TYPEORM_USERNAME=postgres
     export TYPEORM_PASSWORD=rogerneo
