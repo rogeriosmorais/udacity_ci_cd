@@ -3,11 +3,26 @@
     src: /root/project/backend
     dest: /home/ubuntu
 
-- name: Starting backend service
+- name: Installing backend
+  shell: |
+    cd /home/ubuntu/backend    
+    npm install        
+
+- name: Building backend service
   shell: |
     cd /home/ubuntu/backend
-    ./env.sh
-    npm install
-    npm run build
+    npm run start:prod
+
+- name: Running backend service
+  shell: |
+    cd /home/ubuntu/backend
+    export TYPEORM_CONNECTION=postgres
+    export TYPEORM_HOST=udacitycicd.cvpi0ipgh545.us-east-1.rds.amazonaws.com
+    export TYPEORM_PORT=5432
+    export TYPEORM_USERNAME=postgres
+    export TYPEORM_PASSWORD=rogerneo
+    export TYPEORM_DATABASE=glee2
+    export TYPEORM_MIGRATIONS=./src/migrations/*.ts
+    export TYPEORM_ENTITIES=./src/modules/**/*.entity.ts    
     npm run start:prod
 #    pm2 start npm -- start:prod -- name "backend"
