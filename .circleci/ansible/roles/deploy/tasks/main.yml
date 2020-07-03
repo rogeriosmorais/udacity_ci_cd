@@ -23,6 +23,6 @@
     export TYPEORM_PASSWORD=rogerneo
     export TYPEORM_DATABASE=glee2
     export TYPEORM_MIGRATIONS=./src/migrations/*.ts
-    export TYPEORM_ENTITIES=./src/modules/**/*.entity.ts    
+    export TYPEORM_ENTITIES=./src/modules/**/*.entity.ts
     npm run start:prod
 #    pm2 start npm -- start:prod -- name "backend"
