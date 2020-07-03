@@ -11,7 +11,7 @@
 - name: Building backend service
   shell: |
     cd /home/ubuntu/backend
-    npm run start:prod
+    npm run build
 
 - name: Running backend service
   shell: |
@@ -24,5 +24,5 @@
     export TYPEORM_DATABASE=glee2
     export TYPEORM_MIGRATIONS=./src/migrations/*.ts
     export TYPEORM_ENTITIES=./src/modules/**/*.entity.ts
-    npm run start:prod
+    npm run start
 #    pm2 start npm -- start:prod -- name "backend"
