@@ -83,7 +83,7 @@ jobs:
           command: |
             cd backend
             npm install
-            npm run migrations
+            npm run migrations:create
 
   audit-frontend:
     docker:
@@ -139,4 +139,4 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-      - configure_and_deploy
+#      - configure_and_deploy
