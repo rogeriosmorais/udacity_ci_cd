@@ -6,6 +6,7 @@
 - name: Starting backend service
   shell: |
     cd /home/ubuntu/backend
+    ./env.sh
     npm install
     npm run build
     npm run start:prod
