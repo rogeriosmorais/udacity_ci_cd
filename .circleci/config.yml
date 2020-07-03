@@ -103,10 +103,15 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["2b:ae:fa:9e:27:5b:f2:60:50:fa:b6:b3:02:ce:d0:eb"]
       - run:
+          name: "Run migrations"
+          command: |
+            cd backend
+            npm run migrations
+      - run:
           name: Install dependencies
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
-            apk add openssh-client            
+            apk add openssh-client
       - run:
           name: Configure and deploy server
           command: |            
