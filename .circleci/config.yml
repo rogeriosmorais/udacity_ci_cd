@@ -82,7 +82,6 @@ jobs:
           name: "Audit backend"
           command: |
             cd backend
-#            npm audit --audit-level=critical
             npm run migrations
 
   audit-frontend:
