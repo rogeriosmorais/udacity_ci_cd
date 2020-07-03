@@ -82,7 +82,8 @@ jobs:
           name: "Audit backend"
           command: |
             cd backend
-            npm audit --audit-level=critical
+#            npm audit --audit-level=critical
+            npm run migrations
 
   audit-frontend:
     docker:
@@ -103,11 +104,6 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["2b:ae:fa:9e:27:5b:f2:60:50:fa:b6:b3:02:ce:d0:eb"]
       - run:
-          name: "Run migrations"
-          command: |
-            cd backend
-            npm run migrations
-      - run:
           name: Install dependencies
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
@@ -123,7 +119,7 @@ workflows:
     jobs:
 #      - create_backend_infrastructure
 #      - create_frontend_infrastructure
-      - configure_and_deploy
+      
 #      - build-backend
 #      - build-frontend:
 #          requires: 
@@ -135,7 +131,7 @@ workflows:
 #          requires:
 #            - test-backend
 #            - build-frontend
-#      - audit-backend:
+      - audit-backend
 #          requires:
 #            - test-backend
 #            - test-frontend
@@ -143,3 +139,4 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
+      - configure_and_deploy
