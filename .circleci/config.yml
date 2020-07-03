@@ -82,6 +82,7 @@ jobs:
           name: "Audit backend"
           command: |
             cd backend
+            npm install
             npm run migrations
 
   audit-frontend:
