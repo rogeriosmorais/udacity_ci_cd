@@ -1,11 +1,11 @@
 - name: Copy backend files
   copy:
     src: /root/project/backend
-    dest: /home/ubuntu/backend
+    dest: /home/ubuntu
 
 - name: Starting backend service
   shell: |
-    cd /home/ubuntu/backend/backend    
+    cd /home/ubuntu/backend
     npm install
     npm run build
     npm run start:prod
