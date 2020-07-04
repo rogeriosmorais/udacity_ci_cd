@@ -25,6 +25,30 @@ jobs:
                 --template-file ./.circleci/files/frontend.yml \
                 --stack-name udacitycicdfrontstack
 
+    create_network_infrastructure:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run:
+            name: Ensure frontend infrastructure exist
+            command: |
+              aws cloudformation deploy \
+                --template-file ./.circleci/files/frontend.yml \
+                --stack-name networkstack
+
+    create_cloudfront_infrastructure:
+      docker:
+        - image: amazon/aws-cli
+      steps:
+        - checkout
+        - run:
+            name: Ensure frontend infrastructure exist
+            command: |
+              aws cloudformation deploy \
+                --template-file ./.circleci/files/frontend.yml \
+                --stack-name couldfrontstack
+
   build-backend:
     docker:
       - image: circleci/node:13.8.0
