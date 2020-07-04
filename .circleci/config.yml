@@ -179,8 +179,14 @@ workflows:
 #            - test-backend
 #            - test-frontend
       - create_network_infrastructure
-      - create_backend_infrastructure
-      - create_frontend_infrastructure    
-      - create_cloudfront_infrastructure
+      - create_backend_infrastructure:
+          requires:
+              - create_network_infrastructure
+      - create_frontend_infrastructure:
+          requires:
+              - create_backend_infrastructure    
+      - create_cloudfront_infrastructure:
+          requires:
+              - create_cloudfront_infrastructure
       
 #      - configure_and_deploy
