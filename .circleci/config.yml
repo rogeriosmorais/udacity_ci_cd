@@ -187,6 +187,6 @@ workflows:
               - create_backend_infrastructure    
       - create_cloudfront_infrastructure:
           requires:
-              - create_cloudfront_infrastructure
+              - create_frontend_infrastructure
       
 #      - configure_and_deploy
