@@ -21,8 +21,10 @@ jobs:
               --template-file ./.circleci/files/backend.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
-      - destroy_environment:
+      - run:
         when: on_fail
+        command: |
+            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
   create_frontend_infrastructure:
     docker:
