@@ -23,7 +23,7 @@ jobs:
             command: |
               aws cloudformation deploy \
                 --template-file ./.circleci/files/frontend.yml \
-                --stack-name udacitycicdfrontstack                
+                --stack-name udacitycicdfrontstack
 
   build-backend:
     docker:
@@ -116,10 +116,7 @@ jobs:
 
 workflows:
   default:
-    jobs:
-#      - create_backend_infrastructure
-#      - create_frontend_infrastructure
-      
+    jobs:  
 #      - build-backend
 #      - build-frontend:
 #          requires: 
@@ -139,4 +136,6 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-       - configure_and_deploy
+#      - create_backend_infrastructure
+      - create_frontend_infrastructure    
+#      - configure_and_deploy
