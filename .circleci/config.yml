@@ -20,8 +20,11 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
-          on_fail:
-            - destroy_environment        
+      - run:
+          name: Rollback
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
   create_frontend_infrastructure:
     docker:
@@ -36,6 +39,7 @@ jobs:
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
           on_fail:
             - destroy_environment
+
   create_network_infrastructure:
     docker:
       - image: amazon/aws-cli
