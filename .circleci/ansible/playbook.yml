@@ -1,6 +1,14 @@
 
-- name: "Configure and Deploy Infrastructure"
-  hosts: all
+- name: "Configure and Deploy Backend Infrastructure"
+  hosts: backend
+    
+  gather_facts: False
+  roles:
+   - configure-server
+   - deploy
+
+- name: "Configure and Deploy Frontend Infrastructure"
+  hosts: frontend
     
   gather_facts: False
   roles:
