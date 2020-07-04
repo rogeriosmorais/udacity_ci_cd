@@ -23,8 +23,7 @@ jobs:
       - run:
           name: Rollback
           when: on_fail
-          command: |
-            aws cloudformation describe-stack-events --stack-name prod-${CIRCLE_WORKFLOW_ID}
+          command: |            
             aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
   create_frontend_infrastructure:
@@ -41,8 +40,7 @@ jobs:
       - run:
           name: Rollback
           when: on_fail
-          command: |
-            aws cloudformation describe-stack-events --stack-name prod-${CIRCLE_WORKFLOW_ID}
+          command: |            
             aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
   create_network_infrastructure:
@@ -59,8 +57,7 @@ jobs:
       - run:
           name: Rollback
           when: on_fail
-          command: |
-            aws cloudformation describe-stack-events --stack-name prod-${CIRCLE_WORKFLOW_ID}
+          command: |            
             aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
   create_cloudfront_infrastructure:
@@ -77,8 +74,7 @@ jobs:
       - run:
           name: Rollback
           when: on_fail
-          command: |
-            aws cloudformation describe-stack-events --stack-name prod-${CIRCLE_WORKFLOW_ID}
+          command: |            
             aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 
   build-backend:
