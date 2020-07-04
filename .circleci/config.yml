@@ -34,7 +34,7 @@ jobs:
           name: Ensure frontend infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file ./.circleci/files/frontend.yml \
+              --template-file ./.circleci/files/network.yml \
               --stack-name networkstack
 
   create_cloudfront_infrastructure:
@@ -46,7 +46,7 @@ jobs:
           name: Ensure frontend infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file ./.circleci/files/frontend.yml \
+              --template-file ./.circleci/files/cloudfront.yml \
               --stack-name couldfrontstack
 
   build-backend:
