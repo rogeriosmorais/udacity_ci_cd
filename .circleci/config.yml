@@ -19,12 +19,12 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
-              --stack-name prod-${CIRCLE_WORKFLOW_ID}
+              --stack-name backend-prod-${CIRCLE_WORKFLOW_ID}
       - run:
           name: Rollback
           when: on_fail
           command: |            
-            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name backend-prod-${CIRCLE_WORKFLOW_ID}
 
   create_frontend_infrastructure:
     docker:
@@ -36,12 +36,12 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/frontend.yml \
-              --stack-name prod-${CIRCLE_WORKFLOW_ID}
+              --stack-name frontend-prod-${CIRCLE_WORKFLOW_ID}
       - run:
           name: Rollback
           when: on_fail
           command: |            
-            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name frontend-prod-${CIRCLE_WORKFLOW_ID}
 
   create_network_infrastructure:
     docker:
@@ -53,12 +53,12 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
-              --stack-name prod-${CIRCLE_WORKFLOW_ID}         
+              --stack-name network-prod-${CIRCLE_WORKFLOW_ID}         
       - run:
           name: Rollback
           when: on_fail
           command: |            
-            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name network-prod-${CIRCLE_WORKFLOW_ID}
 
   create_cloudfront_infrastructure:
     docker:
@@ -70,12 +70,12 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name prod-${CIRCLE_WORKFLOW_ID}
+              --stack-name cloudfront-prod-${CIRCLE_WORKFLOW_ID}
       - run:
           name: Rollback
           when: on_fail
           command: |            
-            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
+            aws cloudformation delete-stack --stack-name cloudfront-prod-${CIRCLE_WORKFLOW_ID}
 
   build-backend:
     docker:
