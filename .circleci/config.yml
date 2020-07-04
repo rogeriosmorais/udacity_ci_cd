@@ -20,7 +20,8 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
-      - destroy_environment
+
+      - destroy_environment:
         when: on_fail
 
   create_frontend_infrastructure:
@@ -34,7 +35,8 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/frontend.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
-      - destroy_environment
+
+      - destroy_environment:
         when: on_fail
 
   create_network_infrastructure:
@@ -48,7 +50,7 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}         
-      - destroy_environment
+      - destroy_environment:
         when: on_fail
 
   create_cloudfront_infrastructure:
@@ -62,7 +64,7 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
               --stack-name prod-${CIRCLE_WORKFLOW_ID}
-      - destroy_environment
+      - destroy_environment:
         when: on_fail
 
   build-backend:
