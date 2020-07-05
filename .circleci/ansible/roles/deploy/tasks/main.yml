@@ -36,7 +36,7 @@
 - name: Running backend service
   shell: |
     cd /home/ubuntu/backend
-    echo $TYPEORM_HOST
+    echo $TYPEORM_PORT
     pm2 start npm --no-automation --name "backend" -- run start
 #    export TYPEORM_CONNECTION=postgres
 #    export TYPEORM_HOST=udacity2.cvpi0ipgh545.us-east-1.rds.amazonaws.com
