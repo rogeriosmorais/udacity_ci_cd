@@ -1,4 +1,4 @@
 [backend]
-3.85.141.125 ansible_user=ubuntu
+18.207.207.31 ansible_user=ubuntu
 
 [frontend]
