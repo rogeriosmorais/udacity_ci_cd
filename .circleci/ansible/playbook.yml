@@ -10,7 +10,7 @@
     TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
     TYPEORM_ENTITIES: $TYPEORM_ENTITIES
   hosts: backend    
-  gather_facts: False
+#  gather_facts: False
   roles:
    - configure-server
    - deploy
