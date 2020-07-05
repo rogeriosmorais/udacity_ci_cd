@@ -1,4 +1,14 @@
 
+environment:
+  TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+  TYPEORM_HOST: $TYPEORM_HOST
+  TYPEORM_PORT: 5432
+  TYPEORM_USERNAME: $TYPEORM_USERNAME
+  TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+  TYPEORM_DATABASE: $TYPEORM_DATABASE
+  TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+  TYPEORM_ENTITIES: $TYPEORM_ENTITIES
+
 - name: "Configure and Deploy Backend Infrastructure"
   hosts: backend
     
@@ -7,10 +17,10 @@
    - configure-server
    - deploy
 
-- name: "Configure and Deploy Frontend Infrastructure"
-  hosts: frontend
+#- name: "Configure and Deploy Frontend Infrastructure"
+#  hosts: frontend
     
-  gather_facts: False
-  roles:
-   - configure-server
-   - deploy
+#  gather_facts: False
+#  roles:
+#   - configure-server
+#   - deploy

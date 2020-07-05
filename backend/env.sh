@@ -1,5 +1,5 @@
 export TYPEORM_CONNECTION=postgres
-export TYPEORM_HOST=udacitycicd.cvpi0ipgh545.us-east-1.rds.amazonaws.com
+export TYPEORM_HOST=udacity.cvpi0ipgh545.us-east-1.rds.amazonaws.com
 export TYPEORM_PORT=5432
 export TYPEORM_USERNAME=postgres
 export TYPEORM_PASSWORD=rogerneo

@@ -1,13 +1,5 @@
 version: 2.1
 
-commands:
-  destroy_environment:
-    steps:
-      - run:
-          name: Destroy environment
-          command: |
-            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
-
 jobs:
   create_backend_infrastructure:
     docker:
@@ -188,15 +180,15 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-      - create_network_infrastructure
-      - create_backend_infrastructure:
-          requires:
-              - create_network_infrastructure
-      - create_frontend_infrastructure:
-          requires:
-              - create_backend_infrastructure    
-      - create_cloudfront_infrastructure:
-          requires:
-              - create_frontend_infrastructure
+#      - create_network_infrastructure
+#      - create_backend_infrastructure:
+#          requires:
+#              - create_network_infrastructure
+#      - create_frontend_infrastructure:
+#          requires:
+#              - create_backend_infrastructure    
+#      - create_cloudfront_infrastructure:
+#          requires:
+#              - create_frontend_infrastructure
       
-#      - configure_and_deploy
+      - configure_and_deploy
