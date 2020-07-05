@@ -8,20 +8,14 @@
   raw: apt -y update && apt install -y python-minimal
   when: check_python.rc != 0
 
-#- name: Install NodeJS
-#  become: yes
-#  become_method: sudo
-#  become_user: root
-#  command: apt install -y nodejs
-
-- name: "install dependencies."
+- name: "Install dependencies."
   become: true
   apt:
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
 
-- name: "install pm2"
+- name: "Install pm2"
   become: true
   npm:
     name: pm2
