@@ -2,7 +2,7 @@
 - name: "Configure and Deploy Backend Infrastructure"
   environment:
     TYPEORM_CONNECTION: $TYPEORM_CONNECTION
-    TYPEORM_HOST: $TYPEORM_HOST
+    TYPEORM_HOST: "{{ lookup('env','TYPEORM_HOST') }}"
     TYPEORM_PORT: 5432
     TYPEORM_USERNAME: $TYPEORM_USERNAME
     TYPEORM_PASSWORD: $TYPEORM_PASSWORD
