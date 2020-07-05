@@ -20,29 +20,12 @@
 #    cd /home/ubuntu/backend
 #    npm run build
 
-#- name: Run backend migrations
-#  shell: |
-#    cd /home/ubuntu/backend
-#    export TYPEORM_CONNECTION=postgres
-#    export TYPEORM_HOST=udacitycicd.cvpi0ipgh545.us-east-1.rds.amazonaws.com
-#    export TYPEORM_PORT=5432
-#    export TYPEORM_USERNAME=postgres
-#    export TYPEORM_PASSWORD=rogerneo
-#    export TYPEORM_DATABASE=udacity
-#    export TYPEORM_MIGRATIONS=./src/migrations/*.ts
-#    export TYPEORM_ENTITIES=./src/modules/**/*.entity.ts
-#    npm run migrations
+- name: Run backend migrations
+  shell: |
+    cd /home/ubuntu/backend
+    npm run migrations
 
 - name: Running backend service
   shell: |
-    cd /home/ubuntu/backend
-    echo $TYPEORM_HOST
+    cd /home/ubuntu/backend    
     pm2 start npm --no-automation --name "backend" -- run start
-#    export TYPEORM_CONNECTION=postgres
-#    export TYPEORM_HOST=udacity2.cvpi0ipgh545.us-east-1.rds.amazonaws.com
-#    export TYPEORM_PORT=5432
-#    export TYPEORM_USERNAME=postgres
-#    export TYPEORM_PASSWORD=rogerneo
-#    export TYPEORM_DATABASE=udacity
-#    export TYPEORM_MIGRATIONS=./src/migrations/*.ts
-#    export TYPEORM_ENTITIES=./src/modules/**/*.entity.ts
