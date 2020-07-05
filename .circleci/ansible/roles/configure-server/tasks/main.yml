@@ -4,15 +4,15 @@
   failed_when: false
   register: check_python
 
-#- name: Install Python
-#  raw: apt -y update && apt install -y python-minimal
-#  when: check_python.rc != 0
+- name: Install Python
+  raw: apt -y update && apt install -y python-minimal
+  when: check_python.rc != 0
 
-#- name: Install NodeJS
-#  become: yes
-#  become_method: sudo
-#  become_user: root
-#  command: apt install -y nodejs
+- name: Install NodeJS
+  become: yes
+  become_method: sudo
+  become_user: root
+  command: apt install -y nodejs
 
 - name: "install dependencies."
   become: true
@@ -29,9 +29,4 @@
     production: yes
     state: present
 
-#- name: Install PM2
-#  raw: npm install pm2 -g
-
-#- name: Export Env Variables
-#  raw: export ENVIRONMENT=production && export DB=XXX
 
