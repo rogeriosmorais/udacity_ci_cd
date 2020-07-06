@@ -200,6 +200,8 @@ jobs:
           command: |
             apk add --update ansible # install the dependencies needed for your playbook
             apk add openssh-client
+      - attach_workspace:
+          at: .circleci/ansible/
       - run:
           name: Test inventory file
           command: |            
