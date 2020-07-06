@@ -276,7 +276,6 @@ jobs:
       - run:
           name: "Test frontend"
           command: |  
-#            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
             URL="http://udapeople-bff1ae4.s3.amazonaws.com/index.html#/employees"
             if curl -s ${URL} | grep "Welcome"
             then
@@ -284,6 +283,7 @@ jobs:
             else
             return 0
             fi
+#            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
 
 workflows:
   default:
