@@ -11,19 +11,20 @@ jobs:
           command: |            
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
-              --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name backend \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Save IP
           command: |     
             cd .circleci/ansible/
             echo "[backend]" > inventory.txt
-            aws ec2 describe-instances \
-              --filter "Name=tag-value,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> inventory.txt
+            serverip=aws ec2 describe-instances \
+                        --filter "Name=tag-value,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                        --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                        --output text >> inventory.txt
             sed -i '$ s/$/ ansible_user=ubuntu/' inventory.txt
             cat inventory.txt
+            echo 'export BACKEND_IP='$serverip >> $BASH_ENV
       - run:
           name: Install tar/gzip utility
           command: |
@@ -37,8 +38,8 @@ jobs:
           name: Rollback
           when: on_fail
           command: |           
-            aws cloudformation delete-stack --stack-name network-${CIRCLE_WORKFLOW_ID:0:7} 
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name network
+            aws cloudformation delete-stack --stack-name backend
 
   create_frontend_infrastructure:
     docker:
@@ -50,16 +51,15 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/frontend.yml \
-              --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} \
-              --on-failure "DELETE"
+              --stack-name frontend \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}              
       - run:
           name: Rollback
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}            
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name backend
+            aws cloudformation delete-stack --stack-name frontend
 
   create_network_infrastructure:
     docker:
@@ -71,8 +71,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
-              --stack-name network \
-              --on-failure "DELETE" \
+              --stack-name network \              
               --no-fail-on-empty-changeset 
       - run:
           name: Rollback
@@ -91,16 +90,15 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
               --stack-name cloudfront \
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
-              --on-failure "DELETE" \
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \              
               --no-fail-on-empty-changeset
       - run:
           name: Rollback
           when: on_fail
           command: |              
             aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}            
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name backend
+            aws cloudformation delete-stack --stack-name frontend
             aws cloudformation delete-stack --stack-name cloudfront
 
   update_cloudfront_infrastructure:
@@ -113,8 +111,8 @@ jobs:
           command: |
             aws cloudformation update-stack \
               --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}              
+              --stack-name cloudfront
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
 
   build-backend:
@@ -203,8 +201,9 @@ jobs:
       - attach_workspace:
           at: .circleci/ansible/
       - run:
-          name: Test inventory file
+          name: Test
           command: |            
+            echo $BACKEND_IP
             cd .circleci/ansible/
             cat inventory.txt
       - run:
