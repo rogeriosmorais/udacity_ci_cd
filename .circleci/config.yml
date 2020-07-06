@@ -109,12 +109,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Ensure cloudfront infrastructure exist
+          name: Update cloudfront to new bucket
           command: |
             aws cloudformation update-stack \
-              --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3
-              --parameter-overrides WorkflowID=bff1ae4
+              --use-previous-template \
+#              --template-file ./.circleci/files/cloudfront.yml \
+              --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3 \
+              --parameter-overrides WorkflowID=bff1ae4 \
 #              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
 
