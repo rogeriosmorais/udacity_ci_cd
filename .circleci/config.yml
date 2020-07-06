@@ -13,7 +13,6 @@ jobs:
               --template-file ./.circleci/files/backend.yml \
               --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
-
       - run:
           name: Save IP
           command: |
@@ -21,6 +20,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory.txt
             echo " ansible_user=ubuntu" >> inventory.txt
+            cat inventory.txt
       - run:
           name: Install tar/gzip utility
           command: |
