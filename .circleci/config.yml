@@ -113,8 +113,9 @@ jobs:
           command: |
             aws cloudformation update-stack \
               --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+              --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3
+              --parameter-overrides WorkflowID=bff1ae4
+#              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
 
   build-backend:
@@ -282,17 +283,17 @@ workflows:
 #            - test-backend
 #            - test-frontend
 #      - create_network_infrastructure
-      - create_backend_infrastructure
+#      - create_backend_infrastructure
 #          requires: [create_network_infrastructure]
-      - create_frontend_infrastructure
+#      - create_frontend_infrastructure
 #          requires: [create_network_infrastructure]    
 #      - create_cloudfront_infrastructure:
 #          requires: create_frontend_infrastructure      
-      - configure_and_deploy:
-          requires: [create_backend_infrastructure]
-      - deploy-frontend:
-          requires: [configure_and_deploy]
-#      - update_cloudfront_infrastructure:
+#      - configure_and_deploy:
+#          requires: [create_backend_infrastructure]
+#      - deploy-frontend:
+#          requires: [configure_and_deploy]
+      - update_cloudfront_infrastructure
 #          requires: [deploy-frontend]
 #      - smoke_test:
 #          requires: [configure_and_deploy]
