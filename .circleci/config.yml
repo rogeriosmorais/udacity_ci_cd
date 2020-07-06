@@ -179,7 +179,7 @@ jobs:
       - run:
           name: "Copy frontend to S3"
           command: |
-            aws s3 cp frontend s3://udapeople-udacityfrontend/ --recursive
+            aws s3 cp frontend/dist s3://udapeople-udacityfrontend/ --recursive
       
 
 workflows:
@@ -216,3 +216,6 @@ workflows:
 #              - create_frontend_infrastructure      
 #      - configure_and_deploy
       - deploy-frontend
+      - create_cloudfront_infrastructure:
+          requires:
+            - deploy-frontend
