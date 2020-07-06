@@ -4,8 +4,7 @@ Description: >
 Parameters:
   ID:
     Description: Unique identifier.
-    Type: String
-    Default: udacityfrontend
+    Type: String    
 
 Resources:
   WebsiteBucket:

@@ -11,12 +11,30 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
-              --stack-name backend-prod
+              --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --on-failure "DELETE"
+      - run:
+          name: Save IP
+          command: |
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> inventory.txt
+            echo "ansible_user=ubuntu" >> inventory.txt
+      - run:
+          name: Install tar/gzip utility
+          command: |
+            yum -y install tar
+            yum -y install gzip
+      - persist_to_workspace:          
+          paths:
+            - inventory.txt
       - run:
           name: Rollback
           when: on_fail
-          command: |            
-            aws cloudformation delete-stack --stack-name backend-prod
+          command: |           
+            aws cloudformation delete-stack --stack-name network-${CIRCLE_WORKFLOW_ID:0:7} 
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
 
   create_frontend_infrastructure:
     docker:
@@ -28,12 +46,16 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/frontend.yml \
-              --stack-name frontend-prod
+              --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --on-failure "DELETE"
       - run:
           name: Rollback
           when: on_fail
-          command: |            
-            aws cloudformation delete-stack --stack-name frontend-prod
+          command: |
+            aws cloudformation delete-stack --stack-name network
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}            
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
 
   create_network_infrastructure:
     docker:
@@ -45,12 +67,14 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
-              --stack-name network-prod         
+              --stack-name network
+              --on-failure "DELETE"
+              --no-fail-on-empty-changeset
       - run:
           name: Rollback
           when: on_fail
           command: |            
-            aws cloudformation delete-stack --stack-name network-prod
+            aws cloudformation delete-stack --stack-name network
 
   create_cloudfront_infrastructure:
     docker:
@@ -62,12 +86,18 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront-prod
+              --stack-name cloudfront
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+              --on-failure "DELETE"
+              --no-fail-on-empty-changeset
       - run:
           name: Rollback
           when: on_fail
-          command: |            
-            aws cloudformation delete-stack --stack-name cloudfront-prod
+          command: |              
+            aws cloudformation delete-stack --stack-name network
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}            
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name cloudfront
 
   update_cloudfront_infrastructure:
     docker:
@@ -78,8 +108,10 @@ jobs:
           name: Ensure cloudfront infrastructure exist
           command: |
             aws cloudformation update-stack \
-              --use-previous-template \
-              --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3      
+              --template-file ./.circleci/files/cloudfront.yml \
+              --stack-name cloudfront-${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}              
+
 
   build-backend:
     docker:
@@ -217,17 +249,15 @@ workflows:
 #            - test-backend
 #            - test-frontend
 #      - create_network_infrastructure
-#      - create_backend_infrastructure:
-#          requires:
-#              - create_network_infrastructure
+      - create_backend_infrastructure
+#          requires: create_network_infrastructure
 #      - create_frontend_infrastructure:
-#          requires:
-#              - create_backend_infrastructure    
+#          requires: create_network_infrastructure    
 #      - create_cloudfront_infrastructure:
-#          requires:
-#              - create_frontend_infrastructure      
-#      - configure_and_deploy
-#      - deploy-frontend
-      - update_cloudfront_infrastructure
-#          requires:
-#            - deploy-frontend
+#          requires: create_frontend_infrastructure      
+#      - configure_and_deploy:
+#          requires: create_backend_infrastructure
+#      - deploy-frontend:
+#          requires: configure_and_deploy
+#      - update_cloudfront_infrastructure:
+#          requires: deploy-frontend
