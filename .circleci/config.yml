@@ -18,10 +18,11 @@ jobs:
           command: |     
             cd .circleci/ansible/
             echo "[backend]" > inventory.txt
-            serverip=aws ec2 describe-instances \
+            serverip=$(aws ec2 describe-instances \
                         --filter "Name=tag-value,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                         --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                        --output text >> inventory.txt
+                        --output text)
+            echo $serverip >> inventory.txt
             sed -i '$ s/$/ ansible_user=ubuntu/' inventory.txt
             cat inventory.txt
             echo 'export BACKEND_IP='$serverip >> $BASH_ENV
