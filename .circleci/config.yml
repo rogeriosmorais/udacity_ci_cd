@@ -279,7 +279,7 @@ jobs:
             URL="http://udapeople-bff1ae4.s3.amazonaws.com/index.html#/employees"
             function test
             {
-            if (( $( curl -s ${URL} | grep -c "Welcomezz" ) > 0 )) ; then return 0; else return 1; fi
+            if (( $( curl -s ${URL} | grep -c "Welcome" ) > 0 )) ; then return 0; else return 1; fi
             }
             test
 #            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
