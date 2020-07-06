@@ -212,6 +212,14 @@ jobs:
           command: |            
             cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
+      - run:
+          name: Rollback
+          when: on_fail
+          command: |              
+            aws cloudformation delete-stack --stack-name network
+            aws cloudformation delete-stack --stack-name backend
+            aws cloudformation delete-stack --stack-name frontend
+            aws cloudformation delete-stack --stack-name cloudfront
 
   deploy-frontend:
     docker:
@@ -239,7 +247,16 @@ jobs:
           name: "Copy frontend to S3"
           command: |
             bucket_name='udapeople-'${CIRCLE_WORKFLOW_ID:0:7}
-            aws s3 cp frontend/dist 's3://udapeople-'$bucket_name'/' --recursive
+            aws s3 cp frontend/dist 's3://'$bucket_name'/' --recursive
+      - run:
+          name: Rollback
+          when: on_fail
+          command: |              
+            aws cloudformation delete-stack --stack-name network
+            aws cloudformation delete-stack --stack-name backend
+            aws cloudformation delete-stack --stack-name frontend
+            aws cloudformation delete-stack --stack-name cloudfront
+      
       
 
 workflows:
@@ -266,17 +283,16 @@ workflows:
 #            - test-frontend
 #      - create_network_infrastructure
       - create_backend_infrastructure
-#          requires: create_network_infrastructure
+#          requires: [create_network_infrastructure]
       - create_frontend_infrastructure
-#          requires: create_network_infrastructure    
+#          requires: [create_network_infrastructure]    
 #      - create_cloudfront_infrastructure:
 #          requires: create_frontend_infrastructure      
       - configure_and_deploy:
-          requires: 
-            - create_backend_infrastructure
+          requires: [create_backend_infrastructure]
       - deploy-frontend:
           requires: [configure_and_deploy]
 #      - update_cloudfront_infrastructure:
-#          requires: deploy-frontend
+#          requires: [deploy-frontend]
 #      - smoke_test:
 #          requires: [configure_and_deploy]
