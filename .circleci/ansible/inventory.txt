@@ -1,4 +1,0 @@
-[all]
-
-[backend]
-#18.207.207.31 ansible_user=ubuntu

@@ -19,7 +19,7 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory.txt
-            echo " ansible_user=ubuntu" >> inventory.txt
+            sed -i '$ s/$/ ansible_user=ubuntu/' inventory.txt
             cat inventory.txt
       - run:
           name: Install tar/gzip utility
@@ -256,8 +256,8 @@ workflows:
 #          requires: create_network_infrastructure    
 #      - create_cloudfront_infrastructure:
 #          requires: create_frontend_infrastructure      
-#      - configure_and_deploy:
-#          requires: create_backend_infrastructure
+      - configure_and_deploy:
+          requires: create_backend_infrastructure
 #      - deploy-frontend:
 #          requires: configure_and_deploy
 #      - update_cloudfront_infrastructure:
