@@ -114,7 +114,7 @@ jobs:
             aws cloudformation update-stack \
               --use-previous-template \
               --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3 \
-              --parameters WorkflowID=bff1ae4 \
+              --parameters ParameterKey=WorkflowID,ParameterValue=bff1ae4
 #              --parameters WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
 
