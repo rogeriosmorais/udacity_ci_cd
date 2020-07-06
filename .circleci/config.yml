@@ -114,8 +114,8 @@ jobs:
             aws cloudformation update-stack \
               --use-previous-template \
               --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3 \
-              --parameter-overrides WorkflowID=bff1ae4 \
-#              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+              --parameters WorkflowID=bff1ae4 \
+#              --parameters WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 
 
   build-backend:
