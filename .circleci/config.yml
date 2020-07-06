@@ -291,7 +291,7 @@ jobs:
           name: "Tag backend"
           command: |  
             BACKEND_ID=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filters "Name=tag:Name,Values=backend-bff1ae4" \
               --query 'Reservations[*].Instances[*].InstanceId' \
               --output text)            
             echo $BACKEND_ID
