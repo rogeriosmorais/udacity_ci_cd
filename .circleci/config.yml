@@ -201,9 +201,14 @@ jobs:
             apk add --update ansible # install the dependencies needed for your playbook
             apk add openssh-client
       - run:
-          name: Configure and deploy server
+          name: Test inventory file
           command: |            
             cd .circleci/ansible/
+            cat inventory.txt
+      - run:
+          name: Configure and deploy server
+          command: |            
+            cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
 
   deploy-frontend:
