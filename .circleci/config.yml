@@ -78,13 +78,8 @@ jobs:
           name: Ensure cloudfront infrastructure exist
           command: |
             aws cloudformation update-stack \
-              --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |            
-            aws cloudformation revert --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3
+              --use-previous-template \
+              --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3      
 
   build-backend:
     docker:
