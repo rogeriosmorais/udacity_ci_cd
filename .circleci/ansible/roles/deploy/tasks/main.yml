@@ -1,24 +1,24 @@
+- name: Copy backend files
+  copy:
+    src: /root/project/backend
+    dest: /home/ubuntu
+
 - name: Stopping backend service
   ignore_errors: yes
   shell: |
-    cd /home/ubuntu/backend 
+    cd /home/ubuntu/backend
     pm2 stop backend
     pm2 delete backend
 
-#- name: Copy backend files
-#  copy:
-#    src: /root/project/backend
-#    dest: /home/ubuntu
+- name: Installing backend
+  shell: |
+    cd /home/ubuntu/backend    
+    npm install        
 
-#- name: Installing backend
-#  shell: |
-#    cd /home/ubuntu/backend    
-#    npm install        
-
-#- name: Building backend service
-#  shell: |
-#    cd /home/ubuntu/backend
-#    npm run build
+- name: Building backend service
+  shell: |
+    cd /home/ubuntu/backend
+    npm run build
 
 - name: Run backend migrations
   shell: |
