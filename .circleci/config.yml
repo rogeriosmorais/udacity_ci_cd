@@ -5,19 +5,14 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout
-      - run:
-          name: Test
-          command: |
-            echo ${CIRCLE_WORKFLOW_ID:0:7}
+      - checkout      
       - run:
           name: Ensure backend infrastructure exist
-          command: |
-            echo ${CIRCLE_WORKFLOW_ID:0:7}
+          command: |            
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
-              --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} \
               --on-failure "DELETE"
       - run:
           name: Save IP
@@ -25,7 +20,7 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory.txt
-            echo "ansible_user=ubuntu" >> inventory.txt
+            echo " ansible_user=ubuntu" >> inventory.txt
       - run:
           name: Install tar/gzip utility
           command: |
@@ -52,8 +47,8 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/frontend.yml \
-              --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} \
               --on-failure "DELETE"
       - run:
           name: Rollback
@@ -73,9 +68,9 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
-              --stack-name network
-              --on-failure "DELETE"
-              --no-fail-on-empty-changeset
+              --stack-name network \
+              --on-failure "DELETE" \
+              --no-fail-on-empty-changeset 
       - run:
           name: Rollback
           when: on_fail
@@ -92,9 +87,9 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
-              --on-failure "DELETE"
+              --stack-name cloudfront \
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
+              --on-failure "DELETE" \
               --no-fail-on-empty-changeset
       - run:
           name: Rollback
@@ -115,7 +110,7 @@ jobs:
           command: |
             aws cloudformation update-stack \
               --template-file ./.circleci/files/cloudfront.yml \
-              --stack-name cloudfront-${CIRCLE_WORKFLOW_ID:0:7}
+              --stack-name cloudfront-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}              
 
 
