@@ -11,9 +11,8 @@ export class Employee extends AggregateRoot<number> {
     super();
     if (params) {
       this.accountNumber = params.accountNumber;
-      this.address = params.address;
-// FORCING ERROR BY REMOVING COLUMN      
-//      this.firstName = params.firstName;
+      this.address = params.address;     
+      this.firstName = params.firstName;
       this.gender = getGenderFromEnum(params.gender);
       this.lastName = params.lastName;
       this.middleName = params.middleName;
@@ -43,7 +42,7 @@ export class Employee extends AggregateRoot<number> {
 
   // FORCING ERROR BY REMOVING COLUMN
   //@Column({ length: 100 })
-  //public firstName: string;
+  public firstName: string;
 
   @Column({ length: 100, nullable: true })
   public middleName: string;
