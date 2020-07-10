@@ -336,8 +336,8 @@ workflows:
               branches:
                 only: master
 #          requires: [audit-frontend]
-      - create_frontend_infrastructure:
-          requires: [audit-frontend]
+      - create_frontend_infrastructure
+#          requires: [audit-frontend]
       - configure_and_deploy_backend:
           requires: [create_backend_infrastructure]
       - deploy-frontend:
