@@ -281,7 +281,7 @@ jobs:
             URL="http://${BACKEND_IP}:3030/api/status"
             function test
             {
-            if (( $( curl -s ${URL} | grep -c "\"status\":\"ok\"" ) > 0 )) ; then return 0; else return 1; fi
+            if (( $( curl -s ${URL} | grep -c "\"status\":\"ouk\"" ) > 0 )) ; then return 0; else return 1; fi
             }
             test
       - run:      
@@ -318,10 +318,11 @@ jobs:
       - run:
           name: "Delete instances that were previously production"
           command: | 
+            set -e
             export OLD_WORKFLOW=$(curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/PROD)
             echo $OLD_WORKFLOW
-            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
-            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
+            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force || true
+            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW} || true
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}
       - run:
           name: "Record Production Workflow"

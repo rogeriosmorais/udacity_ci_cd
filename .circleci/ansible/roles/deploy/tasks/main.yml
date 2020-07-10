@@ -19,12 +19,7 @@
   shell: |
     cd /home/ubuntu/backend
     npm run build
-
-- name: Run backend migrations
-  shell: |
-    cd /home/ubuntu/backend
-    npm run migrations
-
+    
 - name: Running backend service
   shell: |
     cd /home/ubuntu/backend    

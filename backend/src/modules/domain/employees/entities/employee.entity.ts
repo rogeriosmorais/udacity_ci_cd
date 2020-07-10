@@ -41,7 +41,7 @@ export class Employee extends AggregateRoot<number> {
   id: number;
 
   // FORCING ERROR BY REMOVING COLUMN
-  //@Column({ length: 100 })
+  @Column({ length: 100 })
   public firstName: string;
 
   @Column({ length: 100, nullable: true })
