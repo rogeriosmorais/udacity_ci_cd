@@ -1,5 +1,15 @@
 version: 2.1
 
+rollback_cloudformation_stacks:
+    steps:
+      - run:
+          when: on_fail
+          name: Rollback
+          command: |
+            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+
 jobs:
   create_backend_infrastructure:
     docker:
@@ -7,12 +17,16 @@ jobs:
     steps:
       - checkout      
       - run:
-          name: Ensure backend infrastructure exists
+          name: Cloudformation for backend
           command: |            
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
               --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: Forced error
+          command: | 
+            return 1
       - run:
           name: Save IP
           command: |     
@@ -36,11 +50,7 @@ jobs:
           paths:
             - inventory.txt
             - backend_ip
-      - run:
-          name: Rollback
-          when: on_fail
-          command: | 
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+      - rollback_cloudformation_stacks
 
   create_frontend_infrastructure:
     docker:
@@ -58,8 +68,9 @@ jobs:
           name: Rollback
           when: on_fail
           command: | 
+            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
             aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}            
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
 
   create_network_infrastructure:
     docker:
@@ -215,14 +226,13 @@ jobs:
           command: |            
             cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
-#     - run:
-#         name: Rollback
-#         when: on_fail
-#         command: |              
-#           aws cloudformation delete-stack --stack-name network
-#           aws cloudformation delete-stack --stack-name backend
-#           aws cloudformation delete-stack --stack-name frontend
-#           aws cloudformation delete-stack --stack-name cloudfront
+      - run:
+          name: Rollback
+          when: on_fail
+          command: |              
+            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
+            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
+            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}  
 
   deploy-frontend:
     docker:
@@ -255,10 +265,9 @@ jobs:
           name: Rollback
           when: on_fail
           command: |              
-            aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend
-            aws cloudformation delete-stack --stack-name frontend
-            aws cloudformation delete-stack --stack-name cloudfront
+            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
+            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
+            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}
       
   smoke_test:
     docker:
@@ -297,6 +306,7 @@ jobs:
           command: | 
             export OLD_WORKFLOW=$(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
             echo $OLD_WORKFLOW
+            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}    
 #            OLD_BACKEND_ID=$(aws ec2 describe-instances \
