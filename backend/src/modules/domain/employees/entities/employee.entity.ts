@@ -12,7 +12,8 @@ export class Employee extends AggregateRoot<number> {
     if (params) {
       this.accountNumber = params.accountNumber;
       this.address = params.address;
-      this.firstName = params.firstName;
+// FORCING ERROR BY REMOVING COLUMN      
+//      this.firstName = params.firstName;
       this.gender = getGenderFromEnum(params.gender);
       this.lastName = params.lastName;
       this.middleName = params.middleName;
@@ -40,7 +41,7 @@ export class Employee extends AggregateRoot<number> {
   //change <string> to <number> in line 8 to fix the compile error
   id: number;
 
-  //FORCING ERROR BY REMOVING COLUMN
+  // FORCING ERROR BY REMOVING COLUMN
   //@Column({ length: 100 })
   //public firstName: string;
 
