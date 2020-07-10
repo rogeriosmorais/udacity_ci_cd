@@ -293,7 +293,7 @@ jobs:
             {
             if (( $( curl -s ${URL} | grep -c "Welcome" ) > 0 )) ; then return 0; else return 1; fi
             }
-            test
+            test      
       - rollback_cloudformation_stacks
       - rollback_database
     
@@ -354,22 +354,22 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-#      - create_backend_infrastructure:
-#          filters:
-#            branches:
-#              only: master
+      - create_backend_infrastructure:
+          filters:
+            branches:
+              only: master
 #            requires: [audit-backend]
-#      - create_frontend_infrastructure:
+      - create_frontend_infrastructure:
 #          requires: [audit-frontend]
-#      - db_migrations:
-#          requires: [create_backend_infrastructure]          
-#      - configure_and_deploy_backend:
-#          requires: [create_backend_infrastructure]
-#      - deploy-frontend:
-#          requires: [configure_and_deploy_backend]
-      - smoke_test
-#          requires: [deploy-frontend]
-#      - create_cloudfront_infrastructure:
-#          requires: [smoke_test]
-#      - clean_up:
-#          requires: [create_cloudfront_infrastructure]
+      - db_migrations:
+          requires: [create_backend_infrastructure]          
+      - configure_and_deploy_backend:
+          requires: [create_backend_infrastructure]
+      - deploy-frontend:
+          requires: [configure_and_deploy_backend]
+     - smoke_test:
+          requires: [deploy-frontend]
+      - create_cloudfront_infrastructure:
+          requires: [smoke_test]
+      - clean_up:
+          requires: [create_cloudfront_infrastructure]
