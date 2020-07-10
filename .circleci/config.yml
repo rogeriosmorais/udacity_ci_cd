@@ -281,7 +281,7 @@ jobs:
             if (( $( curl -s ${URL} | grep -c "\"status\":\"ok\"" ) > 0 )) ; then return 0; else return 1; fi
             }
             test
-      - run:
+      - run:      
           name: "Test frontend"
           command: |  
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3.amazonaws.com/index.html#/employees"
@@ -355,17 +355,17 @@ workflows:
 #            branches:
 #              only: master
 #            requires: [audit-backend]
-#      - create_frontend_infrastructure
+#      - create_frontend_infrastructure:
 #          requires: [audit-frontend]
-      - db_migrations
+#      - db_migrations:
 #          requires: [create_backend_infrastructure]          
-      - configure_and_deploy_backend:
-          requires: [create_backend_infrastructure]
-      - deploy-frontend:
-          requires: [configure_and_deploy_backend]
-      - smoke_test:
-          requires: [deploy-frontend]
-      - create_cloudfront_infrastructure:
-          requires: [smoke_test]
-      - clean_up:
-          requires: [create_cloudfront_infrastructure]
+#      - configure_and_deploy_backend:
+#          requires: [create_backend_infrastructure]
+#      - deploy-frontend:
+#          requires: [configure_and_deploy_backend]
+      - smoke_test
+#          requires: [deploy-frontend]
+#      - create_cloudfront_infrastructure:
+#          requires: [smoke_test]
+#      - clean_up:
+#          requires: [create_cloudfront_infrastructure]
