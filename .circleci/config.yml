@@ -73,8 +73,8 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
-              --stack-name network \              
-              --no-fail-on-empty-changeset 
+              --stack-name network \
+              --no-fail-on-empty-changeset
       - run:
           name: Rollback
           when: on_fail
