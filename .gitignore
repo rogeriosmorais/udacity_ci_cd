@@ -69,3 +69,4 @@ node_modules
 .env
 dist
 backend/env.bat
+backend/env.sh

@@ -16,6 +16,19 @@ commands:
             command: |
               circleci-agent step halt
 
+  rollback_database:
+      steps:
+        - run:
+#            when: on_fail
+            name: Rollback
+            command: |
+              npm run migrations:revert
+        - run:
+#            when: on_fail
+            name: Prevents the workflow from continuing
+            command: |
+              circleci-agent step halt
+
 jobs:
   create_backend_infrastructure:
     docker:
@@ -98,7 +111,7 @@ jobs:
       - run:
           name: "Record Production Workflow"
           command: | 
-            curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
+            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/PROD  
       - rollback_cloudformation_stacks           
 
 #  update_cloudfront_infrastructure:
@@ -116,7 +129,7 @@ jobs:
 #      - run:
 #          name: "Record Production Workflow"
 #          command: | 
-#            curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
+#            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/PROD  
 
   build-backend:
     docker:
@@ -282,7 +295,10 @@ jobs:
           command: |  
             cd backend
             npm install
-            npm run migrations
+            npm run migrations > migrations.txt
+            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data $( grep -c "No migrations are pending" migrations.txt ) https://api.memstash.io/values/NO_MIGRATIONS
+      - rollback_database
+      
 
   clean_up:
     docker:
@@ -291,11 +307,11 @@ jobs:
       - run:
           name: "Delete instances that were previously production"
           command: | 
-            export OLD_WORKFLOW=$(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
+            export OLD_WORKFLOW=$(curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/PROD)
             echo $OLD_WORKFLOW
             aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
-            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}    
+            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}
 #            OLD_BACKEND_ID=$(aws ec2 describe-instances \
 #              --filters "Name=tag:Name,Values=backend-${OLD_WORKFLOW}" \
 #              --query 'Reservations[*].Instances[*].InstanceId' \
@@ -328,15 +344,14 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-      - db_migrations:
-          filters:
-            branches:
-              only: master
-#        requires: [audit-backend]
-#      - create_backend_infrastructure:          
-#          requires: [audit-frontend]
+#      - create_backend_infrastructure:
+#          filters:
+#            branches:
+#              only: master
+#            requires: [audit-backend]
 #      - create_frontend_infrastructure
 #          requires: [audit-frontend]
+      - db_migrations          
 #      - configure_and_deploy_backend:
 #          requires: [create_backend_infrastructure]
 #      - deploy-frontend:
