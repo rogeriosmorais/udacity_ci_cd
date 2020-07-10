@@ -92,16 +92,16 @@ jobs:
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
               --stack-name cloudfront \
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \              
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
               --no-fail-on-empty-changeset
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |              
-            aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend
-            aws cloudformation delete-stack --stack-name frontend
-            aws cloudformation delete-stack --stack-name cloudfront
+#      - run:
+#          name: Rollback
+#          when: on_fail
+#          command: |              
+#            aws cloudformation delete-stack --stack-name network
+#            aws cloudformation delete-stack --stack-name backend
+#            aws cloudformation delete-stack --stack-name frontend
+#            aws cloudformation delete-stack --stack-name cloudfront
 
   update_cloudfront_infrastructure:
     docker:
@@ -215,14 +215,14 @@ jobs:
           command: |            
             cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |              
-            aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend
-            aws cloudformation delete-stack --stack-name frontend
-            aws cloudformation delete-stack --stack-name cloudfront
+#     - run:
+#         name: Rollback
+#         when: on_fail
+#         command: |              
+#           aws cloudformation delete-stack --stack-name network
+#           aws cloudformation delete-stack --stack-name backend
+#           aws cloudformation delete-stack --stack-name frontend
+#           aws cloudformation delete-stack --stack-name cloudfront
 
   deploy-frontend:
     docker:
@@ -298,12 +298,12 @@ jobs:
             $OLD_WORKFLOW = $(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
             echo $OLD_WORKFLOW
             OLD_BACKEND_ID=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-${$OLD_WORKFLOW}" \
+              --filters "Name=tag:Name,Values=backend-${OLD_WORKFLOW}" \
               --query 'Reservations[*].Instances[*].InstanceId' \
               --output text)            
             echo $OLD_BACKEND_ID
             aws ec2 terminate-instances --instance-ids $OLD_BACKEND_ID
-            aws s3 rb s3://udapeople-${$OLD_WORKFLOW} --force 
+            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force 
 
 
 
