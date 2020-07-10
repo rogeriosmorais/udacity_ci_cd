@@ -305,8 +305,10 @@ jobs:
       - run:
           name: Run database migrations
           command: |  
+            set -e
             cd backend
             npm install
+            npm run migrations:generate -- --n "my_new_migr" || true
             npm run migrations > migrations.txt
             curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data $( grep -c "No migrations are pending" migrations.txt ) https://api.memstash.io/values/NO_MIGRATIONS
 
