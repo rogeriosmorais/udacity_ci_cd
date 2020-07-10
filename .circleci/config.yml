@@ -11,10 +11,10 @@ commands:
               aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
               aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
         - run:
-          when: on_fail
-          name: Prevents the workflow from continuing
-          command: |
-            circleci-agent step halt
+            when: on_fail
+            name: Prevents the workflow from continuing
+            command: |
+              circleci-agent step halt
 
 jobs:
   create_backend_infrastructure:
