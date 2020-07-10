@@ -10,6 +10,11 @@ commands:
               aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
               aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
               aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+        - run:
+          when: on_fail
+          name: Prevents the workflow from continuing
+          command: |
+            circleci-agent step halt
 
 jobs:
   create_backend_infrastructure:
@@ -24,10 +29,6 @@ jobs:
               --template-file ./.circleci/files/backend.yml \
               --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
-      - run:
-          name: Forced error
-          command: | 
-            return 1
       - run:
           name: Save IP
           command: |     
@@ -65,13 +66,7 @@ jobs:
               --template-file ./.circleci/files/frontend.yml \
               --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
-      - run:
-          name: Rollback
-          when: on_fail
-          command: | 
-            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+      - rollback_cloudformation_stacks
 
   create_network_infrastructure:
     docker:
@@ -85,11 +80,7 @@ jobs:
               --template-file ./.circleci/files/network.yml \
               --stack-name network \
               --no-fail-on-empty-changeset
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |            
-            aws cloudformation delete-stack --stack-name network
+      - rollback_cloudformation_stacks
 
   create_cloudfront_infrastructure:
     docker:
@@ -108,12 +99,7 @@ jobs:
           name: "Record Production Workflow"
           command: | 
             curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |  
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}            
+      - rollback_cloudformation_stacks           
 
 #  update_cloudfront_infrastructure:
 #    docker:
@@ -227,13 +213,7 @@ jobs:
           command: |            
             cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |              
-            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
-            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
-            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}  
+      - rollback_cloudformation_stacks 
 
   deploy-frontend:
     docker:
@@ -262,13 +242,7 @@ jobs:
           command: |
             bucket_name='udapeople-'${CIRCLE_WORKFLOW_ID:0:7}
             aws s3 cp frontend/dist 's3://'$bucket_name'/' --recursive
-      - run:
-          name: Rollback
-          when: on_fail
-          command: |              
-            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
-            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
-            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}
+      - rollback_cloudformation_stacks
       
   smoke_test:
     docker:
@@ -296,7 +270,18 @@ jobs:
             if (( $( curl -s ${URL} | grep -c "Welcome" ) > 0 )) ; then return 0; else return 1; fi
             }
             test
-      
+      - rollback_cloudformation_stacks
+    
+  db_migrations:  
+    docker:
+      - image: circleci/node:13.8.0    
+    steps:
+      - run:
+          name: Run database migrations
+          command: |  
+            cd backend
+            npm install
+            npm run migrations
 
   clean_up:
     docker:
@@ -342,20 +327,22 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-      - create_backend_infrastructure:
+      - db_migrations:
           filters:
-              branches:
-                only: master
+            branches:
+              only: master
+#        requires: [audit-backend]
+#      - create_backend_infrastructure:          
 #          requires: [audit-frontend]
-      - create_frontend_infrastructure
+#      - create_frontend_infrastructure
 #          requires: [audit-frontend]
-      - configure_and_deploy_backend:
-          requires: [create_backend_infrastructure]
-      - deploy-frontend:
-          requires: [configure_and_deploy_backend]
-      - smoke_test:
-          requires: [deploy-frontend]
-      - create_cloudfront_infrastructure:
-          requires: [smoke_test]
-      - clean_up:
-          requires: [create_cloudfront_infrastructure]
+#      - configure_and_deploy_backend:
+#          requires: [create_backend_infrastructure]
+#      - deploy-frontend:
+#          requires: [configure_and_deploy_backend]
+#      - smoke_test:
+#          requires: [deploy-frontend]
+#      - create_cloudfront_infrastructure:
+#          requires: [smoke_test]
+#      - clean_up:
+#          requires: [create_cloudfront_infrastructure]
