@@ -24,6 +24,7 @@ commands:
             name: Rollback database
             command: |              
               cd backend
+              npm install
               if (( $( curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/NO_MIGRATIONS ) == 0 )) ; \
               then npm run migrations:revert ; \
               else echo "No migrations to revert"; fi
