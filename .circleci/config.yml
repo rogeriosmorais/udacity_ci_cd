@@ -119,11 +119,7 @@ jobs:
               --template-file ./.circleci/files/cloudfront.yml \
               --stack-name cloudfront \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
-              --no-fail-on-empty-changeset
-      - run:
-          name: "Record Production Workflow"
-          command: | 
-            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/PROD  
+              --no-fail-on-empty-changeset      
       - rollback_cloudformation_stacks           
 
 #  update_cloudfront_infrastructure:
@@ -138,10 +134,6 @@ jobs:
 #              --use-previous-template \
 #              --stack-name cloudfront \
 #              --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7}
-#      - run:
-#          name: "Record Production Workflow"
-#          command: | 
-#            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/PROD  
 
   build-backend:
     docker:
@@ -331,6 +323,10 @@ jobs:
             aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}
+      - run:
+          name: "Record Production Workflow"
+          command: | 
+            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/PROD  
 #            OLD_BACKEND_ID=$(aws ec2 describe-instances \
 #              --filters "Name=tag:Name,Values=backend-${OLD_WORKFLOW}" \
 #              --query 'Reservations[*].Instances[*].InstanceId' \
