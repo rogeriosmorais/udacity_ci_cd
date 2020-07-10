@@ -67,7 +67,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Ensure network infrastructure exist
+          name: Create or update network infra
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/network.yml \
@@ -85,7 +85,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Ensure cloudfront infrastructure exist
+          name: Create or update and deploy cloudfront infra
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/cloudfront.yml \
@@ -295,7 +295,7 @@ jobs:
       - run:
           name: "Delete instances that were previously production"
           command: | 
-            $OLD_WORKFLOW = $(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
+            $OLD_WORKFLOW=$(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
             echo $OLD_WORKFLOW
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}    
@@ -333,17 +333,17 @@ workflows:
 #            - test-frontend
 #      - create_network_infrastructure
 #           requires: [audit-frontend]
-      - create_backend_infrastructure
+#      - create_backend_infrastructure
 #          requires: [create_network_infrastructure]
-      - create_frontend_infrastructure
+#      - create_frontend_infrastructure
 #          requires: [create_network_infrastructure]      
-      - configure_and_deploy_backend:
-          requires: [create_backend_infrastructure]
-      - deploy-frontend:
-          requires: [configure_and_deploy_backend]
-      - smoke_test:
-          requires: [deploy-frontend]
-      - create_cloudfront_infrastructure:
-          requires: [smoke_test]
-      - clean_up:
-          requires: [create_cloudfront_infrastructure]
+#      - configure_and_deploy_backend:
+#          requires: [create_backend_infrastructure]
+#      - deploy-frontend:
+#          requires: [configure_and_deploy_backend]
+#      - smoke_test:
+#          requires: [deploy-frontend]
+#      - create_cloudfront_infrastructure:
+#          requires: [smoke_test]
+      - clean_up
+#          requires: [create_cloudfront_infrastructure]
