@@ -341,9 +341,9 @@ workflows:
           requires: [create_backend_infrastructure]
       - deploy-frontend:
           requires: [configure_and_deploy]
-      - smoke_test
+      - smoke_test:
           requires: [deploy-frontend]
-      - update_cloudfront_infrastructure
+      - update_cloudfront_infrastructure:
           requires: [smoke_test]
-       - clean_up
+       - clean_up:
            requires: [update_cloudfront_infrastructure]
