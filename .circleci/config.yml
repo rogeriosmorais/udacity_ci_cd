@@ -336,7 +336,7 @@ workflows:
       - create_frontend_infrastructure:
           requires: [create_network_infrastructure]    
       - create_cloudfront_infrastructure:
-          requires: create_frontend_infrastructure      
+          requires: [create_frontend_infrastructure]
       - configure_and_deploy:
           requires: [create_backend_infrastructure]
       - deploy-frontend:
@@ -345,5 +345,5 @@ workflows:
           requires: [deploy-frontend]
       - update_cloudfront_infrastructure:
           requires: [smoke_test]
-       - clean_up:
-           requires: [update_cloudfront_infrastructure]
+      - clean_up:
+          requires: [update_cloudfront_infrastructure]
