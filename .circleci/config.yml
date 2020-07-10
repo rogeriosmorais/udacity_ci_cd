@@ -14,6 +14,10 @@ jobs:
               --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
+          name: Force error
+          command: |
+            return 1
+      - run:
           name: Save IP
           command: |     
             cd .circleci/ansible/
@@ -95,7 +99,7 @@ jobs:
       - run:
           name: "Record Production Workflow"
           command: | 
-            curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
+            curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
       - run:
           name: Rollback
           when: on_fail
@@ -215,14 +219,12 @@ jobs:
           command: |            
             cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
-#     - run:
-#         name: Rollback
-#         when: on_fail
-#         command: |              
-#           aws cloudformation delete-stack --stack-name network
-#           aws cloudformation delete-stack --stack-name backend
-#           aws cloudformation delete-stack --stack-name frontend
-#           aws cloudformation delete-stack --stack-name cloudfront
+      - run:
+          name: Rollback
+          when: on_fail
+          command: |              
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} 
 
   deploy-frontend:
     docker:
@@ -255,10 +257,8 @@ jobs:
           name: Rollback
           when: on_fail
           command: |              
-            aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend
-            aws cloudformation delete-stack --stack-name frontend
-            aws cloudformation delete-stack --stack-name cloudfront
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} 
       
   smoke_test:
     docker:
@@ -295,7 +295,7 @@ jobs:
       - run:
           name: "Delete instances that were previously production"
           command: | 
-            export OLD_WORKFLOW=$(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
+            export OLD_WORKFLOW=$(curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
             echo $OLD_WORKFLOW
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}    
@@ -312,30 +312,30 @@ jobs:
 workflows:
   default:
     jobs:  
-      - build-backend
-      - build-frontend:
-          requires: 
-            - build-backend
-      - test-backend:
-          requires: 
-            - build-backend
-      - test-frontend:
-          requires:
-            - test-backend
-            - build-frontend
-      - audit-backend:
-          requires:
-            - test-backend
-            - test-frontend
-      - audit-frontend:
-          requires:
-            - test-backend
-            - test-frontend
+#      - build-backend
+#      - build-frontend:
+#          requires: 
+#            - build-backend
+#      - test-backend:
+#          requires: 
+#            - build-backend
+#      - test-frontend:
+#          requires:
+#            - test-backend
+#            - build-frontend
+#      - audit-backend:
+#          requires:
+#            - test-backend
+#            - test-frontend
+#      - audit-frontend:
+#          requires:
+#            - test-backend
+#            - test-frontend
       - create_backend_infrastructure:
           filters:
               branches:
                 only: master
-          requires: [audit-frontend]
+#          requires: [audit-frontend]
       - create_frontend_infrastructure:
           requires: [audit-frontend]
       - configure_and_deploy_backend:
