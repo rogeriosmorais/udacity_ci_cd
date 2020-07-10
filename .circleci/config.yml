@@ -19,15 +19,17 @@ commands:
   rollback_database:
       steps:
         - run:
-#            when: on_fail
+            when: on_fail
             name: Rollback
             command: |
+              sudo apt install nodejs
+              sudo apt install npm
               cd backend
               if (( $( curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/NO_MIGRATIONS ) == 0 )) ; \
               then npm run migrations:revert ; \
               else echo "No migrations to revert"; fi
         - run:
-#            when: on_fail
+            when: on_fail
             name: Prevents the workflow from continuing
             command: |
               circleci-agent step halt
@@ -229,7 +231,8 @@ jobs:
           command: |            
             cd .circleci/ansible/            
             ansible-playbook -i inventory.txt playbook.yml
-      - rollback_cloudformation_stacks 
+      - rollback_cloudformation_stacks
+      - rollback_database
 
   deploy-frontend:
     docker:
@@ -259,6 +262,7 @@ jobs:
             bucket_name='udapeople-'${CIRCLE_WORKFLOW_ID:0:7}
             aws s3 cp frontend/dist 's3://'$bucket_name'/' --recursive
       - rollback_cloudformation_stacks
+      - rollback_database
       
   smoke_test:
     docker:
@@ -287,6 +291,7 @@ jobs:
             }
             test
       - rollback_cloudformation_stacks
+      - rollback_database
     
   db_migrations:  
     docker:
@@ -300,8 +305,6 @@ jobs:
             npm install
             npm run migrations > migrations.txt
             curl -H "Content-Type: text/plain" -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request PUT --data $( grep -c "No migrations are pending" migrations.txt ) https://api.memstash.io/values/NO_MIGRATIONS
-      - rollback_database
-      
 
   clean_up:
     docker:
@@ -354,14 +357,15 @@ workflows:
 #            requires: [audit-backend]
 #      - create_frontend_infrastructure
 #          requires: [audit-frontend]
-      - db_migrations          
-#      - configure_and_deploy_backend:
-#          requires: [create_backend_infrastructure]
-#      - deploy-frontend:
-#          requires: [configure_and_deploy_backend]
-#      - smoke_test:
-#          requires: [deploy-frontend]
-#      - create_cloudfront_infrastructure:
-#          requires: [smoke_test]
-#      - clean_up:
-#          requires: [create_cloudfront_infrastructure]
+      - db_migrations:
+#          requires: [create_backend_infrastructure]          
+      - configure_and_deploy_backend:
+          requires: [create_backend_infrastructure]
+      - deploy-frontend:
+          requires: [configure_and_deploy_backend]
+      - smoke_test:
+          requires: [deploy-frontend]
+      - create_cloudfront_infrastructure:
+          requires: [smoke_test]
+      - clean_up:
+          requires: [create_cloudfront_infrastructure]

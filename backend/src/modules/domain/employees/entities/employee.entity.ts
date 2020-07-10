@@ -40,8 +40,9 @@ export class Employee extends AggregateRoot<number> {
   //change <string> to <number> in line 8 to fix the compile error
   id: number;
 
-  @Column({ length: 100 })
-  public firstName: string;
+  //FORCING ERROR BY REMOVING COLUMN
+  //@Column({ length: 100 })
+  //public firstName: string;
 
   @Column({ length: 100, nullable: true })
   public middleName: string;
