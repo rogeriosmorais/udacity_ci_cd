@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout      
       - run:
-          name: Ensure backend infrastructure exist
+          name: Ensure backend infrastructure exists
           command: |            
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
@@ -25,7 +25,7 @@ jobs:
             echo $serverip >> inventory.txt
             echo $serverip > backend_ip
             sed -i '$ s/$/ ansible_user=ubuntu/' inventory.txt
-            cat inventory.txt            
+            cat inventory.txt
       - run:
           name: Install tar/gzip utility
           command: |
@@ -115,6 +115,10 @@ jobs:
               --use-previous-template \
               --stack-name cloudfront-prod-b81157ec-576b-4ad8-95c0-f2840283cfc3 \
               --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: "Record Production Workflow"
+          command: | 
+            curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
 
   build-backend:
     docker:
@@ -282,22 +286,26 @@ jobs:
             if (( $( curl -s ${URL} | grep -c "Welcome" ) > 0 )) ; then return 0; else return 1; fi
             }
             test
+      
 
-  add_production_tags:
+  clean_up:
     docker:
       - image: amazon/aws-cli
     steps:
       - run:
-          name: "Tag backend"
-          command: |  
-            BACKEND_ID=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-bff1ae4" \
+          name: "Delete instances that were previously production"
+          command: | 
+            $OLD_WORKFLOW = $(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
+            echo $OLD_WORKFLOW
+            OLD_BACKEND_ID=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${$OLD_WORKFLOW}" \
               --query 'Reservations[*].Instances[*].InstanceId' \
               --output text)            
-            echo $BACKEND_ID
-            aws ec2 create-tags \
-              --resources $BACKEND_ID --tags Key=Stage,Value=production
-   
+            echo $OLD_BACKEND_ID
+            aws ec2 terminate-instances --instance-ids $OLD_BACKEND_ID
+            aws s3 rb s3://udapeople-${$OLD_WORKFLOW} --force 
+
+
 
 workflows:
   default:
@@ -321,21 +329,21 @@ workflows:
 #          requires:
 #            - test-backend
 #            - test-frontend
-#      - create_network_infrastructure
+      - create_network_infrastructure
 #           requires: [audit-frontend]
-#      - create_backend_infrastructure
-#          requires: [create_network_infrastructure]
-#      - create_frontend_infrastructure
-#          requires: [create_network_infrastructure]    
-#      - create_cloudfront_infrastructure:
-#          requires: create_frontend_infrastructure      
-#      - configure_and_deploy:
-#          requires: [create_backend_infrastructure]
-#      - deploy-frontend:
-#          requires: [configure_and_deploy]
-#      - smoke_test
-#          requires: [deploy-frontend]
-#      - update_cloudfront_infrastructure
-#          requires: [smoke_test]
-       - add_production_tags
-#           requires: [update_cloudfront_infrastructure]
+      - create_backend_infrastructure:
+          requires: [create_network_infrastructure]
+      - create_frontend_infrastructure:
+          requires: [create_network_infrastructure]    
+      - create_cloudfront_infrastructure:
+          requires: create_frontend_infrastructure      
+      - configure_and_deploy:
+          requires: [create_backend_infrastructure]
+      - deploy-frontend:
+          requires: [configure_and_deploy]
+      - smoke_test
+          requires: [deploy-frontend]
+      - update_cloudfront_infrastructure
+          requires: [smoke_test]
+       - clean_up
+           requires: [update_cloudfront_infrastructure]
