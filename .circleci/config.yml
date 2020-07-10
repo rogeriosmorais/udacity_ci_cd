@@ -11,7 +11,7 @@ jobs:
           command: |            
             aws cloudformation deploy \
               --template-file ./.circleci/files/backend.yml \
-              --stack-name backend \
+              --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Save IP
@@ -39,9 +39,8 @@ jobs:
       - run:
           name: Rollback
           when: on_fail
-          command: |           
-            aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend
+          command: | 
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
 
   create_frontend_infrastructure:
     docker:
@@ -53,15 +52,14 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file ./.circleci/files/frontend.yml \
-              --stack-name frontend \
+              --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Rollback
           when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name network
-            aws cloudformation delete-stack --stack-name backend
-            aws cloudformation delete-stack --stack-name frontend
+          command: | 
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}            
 
   create_network_infrastructure:
     docker:
@@ -94,31 +92,33 @@ jobs:
               --stack-name cloudfront \
               --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
               --no-fail-on-empty-changeset
-#      - run:
-#          name: Rollback
-#          when: on_fail
-#          command: |              
-#            aws cloudformation delete-stack --stack-name network
-#            aws cloudformation delete-stack --stack-name backend
-#            aws cloudformation delete-stack --stack-name frontend
-#            aws cloudformation delete-stack --stack-name cloudfront
-
-  update_cloudfront_infrastructure:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Update cloudfront to new bucket
-          command: | 
-            aws cloudformation update-stack \
-              --use-previous-template \
-              --stack-name cloudfront \
-              --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: "Record Production Workflow"
           command: | 
             curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
+      - run:
+          name: Rollback
+          when: on_fail
+          command: |  
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}            
+
+#  update_cloudfront_infrastructure:
+#    docker:
+#      - image: amazon/aws-cli
+#    steps:
+#      - checkout
+#      - run:
+#          name: Update cloudfront to new bucket
+#          command: | 
+#            aws cloudformation update-stack \
+#              --use-previous-template \
+#              --stack-name cloudfront \
+#              --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7}
+#      - run:
+#          name: "Record Production Workflow"
+#          command: | 
+#            curl -H "Content-Type: text/plain" -H "token: ROGERIOSMORAIS-PROD" --request PUT --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/ROGERIOSMORAIS-PROD  
 
   build-backend:
     docker:
@@ -297,13 +297,15 @@ jobs:
           command: | 
             $OLD_WORKFLOW = $(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
             echo $OLD_WORKFLOW
-            OLD_BACKEND_ID=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-${OLD_WORKFLOW}" \
-              --query 'Reservations[*].Instances[*].InstanceId' \
-              --output text)            
-            echo $OLD_BACKEND_ID
-            aws ec2 terminate-instances --instance-ids $OLD_BACKEND_ID
-            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force 
+            aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
+            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}    
+#            OLD_BACKEND_ID=$(aws ec2 describe-instances \
+#              --filters "Name=tag:Name,Values=backend-${OLD_WORKFLOW}" \
+#              --query 'Reservations[*].Instances[*].InstanceId' \
+#              --output text)            
+#            echo $OLD_BACKEND_ID
+#            aws ec2 terminate-instances --instance-ids $OLD_BACKEND_ID
+#            aws s3 rb s3://udapeople-${OLD_WORKFLOW} --force
 
 
 
@@ -334,16 +336,14 @@ workflows:
       - create_backend_infrastructure
 #          requires: [create_network_infrastructure]
       - create_frontend_infrastructure
-#          requires: [create_network_infrastructure]    
-      - create_cloudfront_infrastructure:
-          requires: [create_frontend_infrastructure]
+#          requires: [create_network_infrastructure]      
       - configure_and_deploy_backend:
           requires: [create_backend_infrastructure]
       - deploy-frontend:
           requires: [configure_and_deploy_backend]
       - smoke_test:
           requires: [deploy-frontend]
-      - update_cloudfront_infrastructure:
+      - create_cloudfront_infrastructure:
           requires: [smoke_test]
       - clean_up:
-          requires: [update_cloudfront_infrastructure]
+          requires: [create_cloudfront_infrastructure]
