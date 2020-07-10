@@ -5,7 +5,7 @@ commands:
       steps:
         - run:
             when: on_fail
-            name: Rollback
+            name: Rollback cloudformation
             command: |
               set -e              
               aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force || true
@@ -21,10 +21,10 @@ commands:
       steps:
         - run:
             when: on_fail
-            name: Rollback
+            name: Rollback database
             command: |
-              sudo apt install nodejs
-              sudo apt install npm
+              apt install nodejs
+              apt install npm
               cd backend
               if (( $( curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/NO_MIGRATIONS ) == 0 )) ; \
               then npm run migrations:revert ; \
