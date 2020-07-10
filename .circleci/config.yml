@@ -10,7 +10,7 @@ commands:
               set -e              
               aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force || true
               aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7} || true
-              aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7} || true
+              aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
 #        - run:
 #            when: on_fail
 #            name: Prevents the workflow from continuing
@@ -22,9 +22,7 @@ commands:
         - run:
             when: on_fail
             name: Rollback database
-            command: |
-              apt install nodejs
-              apt install npm
+            command: |              
               cd backend
               if (( $( curl -H "token: bd38ff90-e828-43d8-b9de-d366e85ffb17" --request GET https://api.memstash.io/values/NO_MIGRATIONS ) == 0 )) ; \
               then npm run migrations:revert ; \
@@ -267,11 +265,13 @@ jobs:
       
   smoke_test:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - run:
           name: "Test backend"
           command: |  
+            apk update
+            apk -y add awscli
             BACKEND_IP=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
