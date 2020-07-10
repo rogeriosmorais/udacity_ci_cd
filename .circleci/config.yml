@@ -312,38 +312,39 @@ jobs:
 workflows:
   default:
     jobs:  
-#      - build-backend
-#      - build-frontend:
-#          requires: 
-#            - build-backend
-#      - test-backend:
-#          requires: 
-#            - build-backend
-#      - test-frontend:
-#          requires:
-#            - test-backend
-#            - build-frontend
-#      - audit-backend:
-#          requires:
-#            - test-backend
-#            - test-frontend
-#      - audit-frontend:
-#          requires:
-#            - test-backend
-#            - test-frontend
-#      - create_network_infrastructure
-#           requires: [audit-frontend]
-#      - create_backend_infrastructure
-#          requires: [create_network_infrastructure]
-#      - create_frontend_infrastructure
-#          requires: [create_network_infrastructure]      
-#      - configure_and_deploy_backend:
-#          requires: [create_backend_infrastructure]
-#      - deploy-frontend:
-#          requires: [configure_and_deploy_backend]
-#      - smoke_test:
-#          requires: [deploy-frontend]
-#      - create_cloudfront_infrastructure:
-#          requires: [smoke_test]
-      - clean_up
-#          requires: [create_cloudfront_infrastructure]
+      - build-backend
+      - build-frontend:
+          requires: 
+            - build-backend
+      - test-backend:
+          requires: 
+            - build-backend
+      - test-frontend:
+          requires:
+            - test-backend
+            - build-frontend
+      - audit-backend:
+          requires:
+            - test-backend
+            - test-frontend
+      - audit-frontend:
+          requires:
+            - test-backend
+            - test-frontend
+      - create_backend_infrastructure:
+          filters:
+              branches:
+                only: master
+          requires: [audit-frontend]
+      - create_frontend_infrastructure:
+          requires: [create_network_infrastructure]      
+      - configure_and_deploy_backend:
+          requires: [create_backend_infrastructure]
+      - deploy-frontend:
+          requires: [configure_and_deploy_backend]
+      - smoke_test:
+          requires: [deploy-frontend]
+      - create_cloudfront_infrastructure:
+          requires: [smoke_test]
+      - clean_up:
+          requires: [create_cloudfront_infrastructure]
