@@ -295,7 +295,7 @@ jobs:
       - run:
           name: "Delete instances that were previously production"
           command: | 
-            $OLD_WORKFLOW=$(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
+            export OLD_WORKFLOW=$(curl -H "token: ROGERIOSMORAIS-PROD" --request GET https://api.memstash.io/values/ROGERIOSMORAIS-PROD)
             echo $OLD_WORKFLOW
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW}
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW}    
