@@ -1,14 +1,15 @@
 version: 2.1
 
-rollback_cloudformation_stacks:
-    steps:
-      - run:
-          when: on_fail
-          name: Rollback
-          command: |
-            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+commands:
+  rollback_cloudformation_stacks:
+      steps:
+        - run:
+            when: on_fail
+            name: Rollback
+            command: |
+              aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
+              aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+              aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
 
 jobs:
   create_backend_infrastructure:
