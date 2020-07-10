@@ -281,7 +281,7 @@ jobs:
             URL="http://${BACKEND_IP}:3030/api/status"
             function test
             {
-            if (( $( curl -s ${URL} | grep -c "\"status\":\"ouk\"" ) > 0 )) ; then return 0; else return 1; fi
+            if (( $( curl -s ${URL} | grep -c "\"status\":\"ok\"" ) > 0 )) ; then return 0; else return 1; fi
             }
             test
       - run:      
