@@ -19,7 +19,6 @@ commands:
 
   rollback_database:
       steps:
-        - checkout
         - run:
             when: on_fail
             name: Rollback database
@@ -268,6 +267,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - checkout
       - run:
           name: "Test backend"
           command: |  
